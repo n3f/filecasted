@@ -1,3 +1,4 @@
+"""
 import addict
 import pathlib
 import toml
@@ -13,6 +14,7 @@ def load_config():
 
 
 def get_version():
-    """Get the project version from the poetry file"""
+    ""Get the project version from the poetry file""
     config = load_config()
     return f'{config.tool.poetry.name}: {config.tool.poetry.version}'
+"""
