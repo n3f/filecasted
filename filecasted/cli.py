@@ -1,8 +1,7 @@
 import click
-import pathlib
-import sys
 
-from . import __version__
+from pathlib import Path
+from . import __version__, parse_input
 
 
 def print_version(ctx, param, value):
@@ -12,30 +11,18 @@ def print_version(ctx, param, value):
     ctx.exit()
 
 
-def get_paths(path):
-    if path == '-':
-        return sys.stdin.readlines()
-    elif pathlib.Path(path).suffix() == '.m3u':
-        with open(path, 'r') as handle:
-            return handle.readlines()
-    raise click.BadParameter(f'{path} must be stdin (-) or a .m3u file.')
-
-
 def validate_input(ctx, param, paths):
-    if len(paths) == 1:
-        paths = get_paths(paths[0])
-
-    audio_extensions = ctx.params['audio_extensions'].split(',')
-    for path_name in paths:
-        path = pathlib.Path(path_name).resolve()
-        ext = path.suffix
-        if not path.resolve().exists() or ext not in audio_extensions:
-            raise click.BadParameter(f'{path_name.strip()} not an audio file')
-    raise click.BadParameter('unable to validate')
+    try:
+        audio_extensions = ctx.params['audio_extensions'].split(',')
+        # preserve ordering, but remove duplicates
+        dedup = dict.fromkeys(p for p in parse_input(paths) if p.suffix in audio_extensions and p.exists())
+        return list(dedup.keys())
+    except Exception as e:
+        raise click.BadParameter('Unable to parse INPUT: ' + e)
 
 
 def validate_output(ctx, param, value):
-    output = pathlib.Path(value).resolve()
+    output = Path(value).resolve()
     if (output.exists() and (
             ctx.params.get('force', False) is not True or
             ctx.params.get('append', False) is not True)):
