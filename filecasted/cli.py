@@ -23,10 +23,12 @@ def validate_input(ctx, param, paths):
 
 def validate_output(ctx, param, value):
     output = Path(value).resolve()
-    if (output.exists() and (
-            ctx.params.get('force', False) is not True or
-            ctx.params.get('append', False) is not True)):
+    # click.echo(f'{ctx.params}')
+    if (output.exists()
+            and ctx.params.get('force', False) is not True
+            and ctx.params.get('append', False) is not True):
         raise click.BadParameter('file exists')
+    return output
 
 
 @click.command()
