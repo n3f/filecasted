@@ -35,7 +35,7 @@ def validate_output(ctx, param, value):
 @click.option('--version', expose_value=False, is_eager=True, callback=print_version, is_flag=True)
 @click.option('-f', '--force', is_flag=True, is_eager=True, help='Force the output to an existing file.')
 @click.option('--audio-extensions', is_eager=True, help='Comma separated list of processable extensions.',
-              default='.mp3,.mp4,.wav')
+              default='.mp3,.mp4,.wav', show_default=True, metavar='EXT')
 @click.option('-a', '--append', is_flag=True, is_eager=True, help='Append INPUT to the output file.')
 @click.option('-o', '--output', nargs=1, type=click.Path(exists=False, writable=True, allow_dash=True),
               default='./rss.xml', callback=validate_output)
@@ -45,8 +45,8 @@ def run(**kwargs):
     """
     Create a podcast file from INPUT.
 
-    INPUT can be a playlist (`.m3u`), stdin (`-`), or a collection of audio files.  Playlists and stdin should
-    be a simple text document with a list of files to add.
+    INPUT can be a playlist (`.m3u`), stdin (`-`), a directory or a collection of audio files.  Playlists and
+    stdin should be a simple text document with a list of files to add.
     """
     click.echo(f'{kwargs.get("_input")}:{kwargs.get("output")}')
 
